@@ -1,0 +1,10 @@
+[package]
+name = "rustapi"
+version = "0.1.0"
+edition = "2021"
+authors = ["Mauro Garcia <main@mgc.sh>"]
+description = "A humble try at rust for backend development"
+
+[dependencies]
+rocket = {version = "=0.5.0-rc.3", features = ["json", "uuid"]}
+
