@@ -1,8 +1,13 @@
+pub mod templates;
+
 #[macro_use] extern crate rocket;
 
 use rocket_dyn_templates::{Template, context};
 use rocket::{serde::json::{serde_json::{json, Value}, Json}, http::Status};
 use rocket::serde::{Serialize, Deserialize};
+
+use templates::validate;
+
 
 #[derive(Serialize, Deserialize)]
 #[serde(crate = "rocket::serde")]
@@ -36,20 +41,19 @@ fn test() -> Json<Test> {
         }
     )
 }
+
 #[get("/posts/<name>")]
 fn get_blog_posts(name:&str) -> Result<Template, Status> {
     let s_name : String = name.to_string(); 
     let template : Template = Template::render(s_name, context! {
         title: format!("Post {}", name)
     });
-    return Ok(template);
-    /*
-    if let Some(template) = template {
+    if validate(name){
         return Ok(template);
-    }else {
-        return Err(Status::NotFound);
     }
-    */
+    else {
+        return Err(Status::NotFound);
+    }    
 }
 
 #[launch]
@@ -58,5 +62,3 @@ fn rocket() -> _ {
         .mount("/", routes![index, json, test, get_blog_posts])
         .attach(Template::fairing())
 }
-
-
