@@ -41,9 +41,25 @@ fn test() -> Json<Test> {
         }
     )
 }
+//define something like this 
+// '/<year>/<month>/<day>'
+// where 'year', 'month' and 'day' are directories and the file with name is inside. 
+#[get("/")]
+fn blog_post() -> Result<Template, Status> {
+    Ok(Template)
+}
+
+//figure out a way to set or update a blogpost's date or something (ie moving into other directory)
+
+//look into creating a post via uploading an html file or just a piece of text, 
+//might have to create a parser that generates an html file from the text sent in a request as 
+//"title, paragraph, image, paragraph... etc..." thought that seems like it might take too much time 
+
 
 #[get("/posts/<name>")]
 fn get_blog_posts(name:&str) -> Result<Template, Status> {
+    //instead of this posts could do a regressive search trough all directories for a file with
+    //such title
     let s_name : String = name.to_string(); 
     let template : Template = Template::render(s_name, context! {
         title: format!("Post {}", name)
