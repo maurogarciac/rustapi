@@ -2,11 +2,11 @@ pub mod templates;
 
 #[macro_use] extern crate rocket;
 
+use std::path::Path;
+
 use rocket_dyn_templates::{Template, context};
 use rocket::{serde::json::{serde_json::{json, Value}, Json}, http::Status};
 use rocket::serde::{Serialize, Deserialize};
-
-use templates::validate;
 
 
 #[derive(Serialize, Deserialize)]
@@ -44,37 +44,50 @@ fn test() -> Json<Test> {
 //define something like this 
 // '/<year>/<month>/<day>'
 // where 'year', 'month' and 'day' are directories and the file with name is inside. 
-#[get("/")]
-fn blog_post() -> Result<Template, Status> {
-    Ok(Template)
+#[get("/<year>/<month>/<day>")]
+fn blog_post(year:&str, month:&str, day:&str) -> Result<Template, Status> {
+    let path : &Path = Path::new(
+        format!("templates/{}/{}/{}/", year, month, day).as_str()
+    );
+    let n : String = templates::contains(&path);
+    if templates::validate(&n) {
+        let template : Template = Template::render(n, context! {
+            title: "asdf"
+        });
+        Ok(template)
+    }
+    else {
+        Err(Status::NotFound)
+    }
 }
 
 //figure out a way to set or update a blogpost's date or something (ie moving into other directory)
 
-//look into creating a post via uploading an html file or just a piece of text, 
+//look into creating a post via uploading an htmle or just a piece of text, 
 //might have to create a parser that generates an html file from the text sent in a request as 
-//"title, paragraph, image, paragraph... etc..." thought that seems like it might take too much time 
+//"title, paragraph, image, paragraph... etc..." thought that seems like it might take too much time
+//
+//paste.rs | might be worth looking into https://rocket.rs/v0.4/guide/pastebin/
 
 
-#[get("/posts/<name>")]
-fn get_blog_posts(name:&str) -> Result<Template, Status> {
+#[get("/post/<name>")]
+fn find_post(name:&str) -> Result<Template, Status> {
     //instead of this posts could do a regressive search trough all directories for a file with
     //such title
-    let s_name : String = name.to_string(); 
-    let template : Template = Template::render(s_name, context! {
+    if templates::validate(name){
+        let template : Template = Template::render(name.to_string(), context! {
         title: format!("Post {}", name)
     });
-    if validate(name){
-        return Ok(template);
+        Ok(template)
     }
     else {
-        return Err(Status::NotFound);
+        Err(Status::NotFound)
     }    
 }
 
 #[launch]
 fn rocket() -> _ {
     rocket::build()
-        .mount("/", routes![index, json, test, get_blog_posts])
+        .mount("/", routes![index, json, test,blog_post ,find_post])
         .attach(Template::fairing())
 }
