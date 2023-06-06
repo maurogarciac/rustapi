@@ -46,10 +46,9 @@ fn test() -> Json<Test> {
 // where 'year', 'month' and 'day' are directories and the file with name is inside. 
 #[get("/<year>/<month>/<day>")]
 fn blog_post(year:&str, month:&str, day:&str) -> Result<Template, Status> {
-    let path : &Path = Path::new(
-        format!("templates/{}/{}/{}/", year, month, day).as_str()
-    );
-    let n : String = templates::contains(&path);
+    let path_format = format!("templates/{}/{}/{}/", year, month, day);
+    let path : &Path = Path::new(&path_format);
+    let n : String = templates::contains(path);
     if templates::validate(&n) {
         let template : Template = Template::render(n, context! {
             title: "asdf"
