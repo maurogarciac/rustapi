@@ -46,12 +46,12 @@ fn test() -> Json<Test> {
 // where 'year', 'month' and 'day' are directories and the file with name is inside. 
 #[get("/<year>/<month>/<day>")]
 fn blog_post(year:&str, month:&str, day:&str) -> Result<Template, Status> {
-    let path_format = format!("templates/{}/{}/{}/", year, month, day);
+    let path_format = format!("blogposts/{}/{}/{}", year, month, day);
     let path : &Path = Path::new(&path_format);
-    let n : String = templates::contains(path);
-    if templates::validate(&n) {
-        let template : Template = Template::render(n, context! {
-            title: "asdf"
+    let important : String = templates::contains(path);
+    if templates::validate(important.clone()) {
+        let template : Template = Template::render(important.as_str(), context! {
+            title: "tbd"
         });
         Ok(template)
     }
@@ -59,6 +59,11 @@ fn blog_post(year:&str, month:&str, day:&str) -> Result<Template, Status> {
         Err(Status::NotFound)
     }
 }
+
+//TODO GET ALL BLOGPOSTS UNDER A SPECIFIC DIRECTORY
+//IE: /year/ (Shows all the blogposts in every month of the whole year)
+//IE: /year/month/ (shows all blogposts in specific month)
+//  No need to implement by day since there will NEVER be 2 blogposts in one day. I think lmao xD.
 
 //figure out a way to set or update a blogpost's date or something (ie moving into other directory)
 
@@ -69,11 +74,11 @@ fn blog_post(year:&str, month:&str, day:&str) -> Result<Template, Status> {
 //paste.rs | might be worth looking into https://rocket.rs/v0.4/guide/pastebin/
 
 
-#[get("/post/<name>")]
+#[get("/<name>")]
 fn find_post(name:&str) -> Result<Template, Status> {
     //instead of this posts could do a regressive search trough all directories for a file with
     //such title
-    if templates::validate(name){
+    if templates::validate(format!("templates/{}.html.hbs", name)){
         let template : Template = Template::render(name.to_string(), context! {
         title: format!("Post {}", name)
     });

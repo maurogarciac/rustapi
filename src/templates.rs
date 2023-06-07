@@ -1,16 +1,18 @@
-use std::path::Path;
+use std::{path::Path, fs};
 
-pub fn validate (template_name : &str) -> bool {
-    let p = Path::new(format!("templates/{}.html.hbs" ,&template_name).as_str()).exists();
+pub fn validate (template_path : String) -> bool {
+    let p = Path::new(format!("{}" ,&template_path).as_str()).exists();
     p
 }
 
 pub fn contains (path : &Path) -> String {
-    let p : &Path = path;
-
-
-    //find file under the path
-    //return file extension
-        
-    "asdfasd".to_string()
+    if let Ok(mut res) = fs::read_dir(path){
+        return res.next().unwrap().unwrap().path().display().to_string();
+    }
+    else if let Err(res) = fs::read_dir(path){
+        return res.to_string();
+    }
+    else{
+        "something wierd".to_string()
+    }
 }
