@@ -41,16 +41,15 @@ fn test() -> Json<Test> {
         }
     )
 }
-//define something like this 
-// '/<year>/<month>/<day>'
-// where 'year', 'month' and 'day' are directories and the file with name is inside. 
+
+// where 'year', 'month' and 'day' are directories and the file with <any>.html.hbs name is inside. 
 #[get("/<year>/<month>/<day>")]
 fn blog_post(year:&str, month:&str, day:&str) -> Result<Template, Status> {
-    let path_format = format!("blogposts/{}/{}/{}", year, month, day);
+    let path_format = format!("templates/blogposts/{}/{}/{}", year, month, day);
     let path : &Path = Path::new(&path_format);
     let important : String = templates::contains(path);
-    if templates::validate(important.clone()) {
-        let template : Template = Template::render(important.as_str(), context! {
+    if templates::validate(important.clone()) {    
+        let template : Template = Template::render(important, context! {
             title: "tbd"
         });
         Ok(template)
