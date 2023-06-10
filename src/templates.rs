@@ -1,4 +1,4 @@
-use std::{path::{Path}, fs};
+use std::{path::Path, fs};
 
 pub fn validate (template_path : String) -> bool {
     let p = Path::new(format!("{}" ,&template_path).as_str()).exists();
@@ -7,7 +7,7 @@ pub fn validate (template_path : String) -> bool {
 
 pub fn contains (path : &Path) -> String {
     if let Ok(mut res) = fs::read_dir(path){
-        return res.next().unwrap().unwrap().path().display().to_string().replace("templates/", "");
+        return res.next().unwrap().unwrap().path().display().to_string().replace("templates/", "").replace(".html.hbs", "");
     }
     else if let Err(res) = fs::read_dir(path){
         return res.to_string();

@@ -3,6 +3,7 @@ pub mod templates;
 #[macro_use] extern crate rocket;
 
 use std::path::Path;
+use std::env;
 
 use rocket_dyn_templates::{Template, context};
 use rocket::{serde::json::{serde_json::{json, Value}, Json}, http::Status};
@@ -48,7 +49,10 @@ fn blog_post(year:&str, month:&str, day:&str) -> Result<Template, Status> {
     let path_format = format!("templates/blogposts/{}/{}/{}", year, month, day);
     let path : &Path = Path::new(&path_format);
     let important : String = templates::contains(path);
+    println!("found path: {} \ncwd: {}", important, env::current_dir().unwrap().display());
     if templates::validate(important.clone()) {    
+        //dont worky
+        //the internet rocket people said i have to implement my own responder and use .render()
         let template : Template = Template::render(important, context! {
             title: "tbd"
         });
